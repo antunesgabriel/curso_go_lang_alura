@@ -10,6 +10,16 @@ func main() {
 	var age float32
 	version := 1.1 // declarando variavel e atribuindo um valor
 
+	letterB := "B"
+	letterb := "b"
+	result := letterB == letterb
+
+	if result {
+		fmt.Println("Sim")
+	} else {
+		fmt.Println("Não")
+	}
+
 	fmt.Println("-> Endereço de idade", &age)
 	fmt.Println("-> Endereço de nome", &name)
 
