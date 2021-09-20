@@ -2,9 +2,13 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"net/http"
+	"os"
+	"time"
 )
+
+const REPEAT_AMOUNT int = 5
+const WAIT time.Duration = 10
 
 func main() {
 	name := welcome()
@@ -50,6 +54,8 @@ func menu() int {
 
 	fmt.Scan(&option)
 
+	fmt.Println("")
+
 	return option
 }
 
@@ -71,19 +77,28 @@ func monitoring()  {
 
 	fmt.Println("--- Iniciando o monitoramento de", len(urls), "sites ---")
 
-	for _, url := range urls {
-		response, error := http.Get(url)
-		statusCode := response.StatusCode
-
-		if error != nil {
-			fmt.Println("Ouve um erro inexperado na requisisção ao site", url)
-			os.Exit(-1)
+	for count := 0; count < REPEAT_AMOUNT; count++  {
+		for _, url := range urls {
+			testSite(url)
 		}
+		fmt.Println("")
 
-		if statusCode == 200 {
-			fmt.Println("O site", url, "está respondendo como o esperado. - STATUS CODE:", statusCode)
-		} else {
-			fmt.Println("O site", url, "não respondeu como esperado. - STATUS CODE", statusCode)
-		}
+		time.Sleep(WAIT * time.Minute)
+	}
+}
+
+func testSite(site string) {
+	response, error := http.Get(site)
+	statusCode := response.StatusCode
+
+	if error != nil {
+		fmt.Println("OPS --  Ouve um erro durante o processo")
+		os.Exit(-1)
+	}
+
+	if statusCode == 200 {
+		fmt.Println("SUCCESS -- O site:", site, "está respondendo como o esperado - STATUS CODE", statusCode)
+	} else {
+		fmt.Println("FAILED -- O site:", site, "não respondeu como o esperado - STATUS CODE", statusCode)
 	}
 }
