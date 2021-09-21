@@ -1,10 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 	"time"
+	"strings"
 )
 
 const REPEAT_AMOUNT int = 5
@@ -68,12 +72,28 @@ func monitoring()  {
 		"https://random-status-code.herokuapp.com",
 	}
 
-	urls = append(
-		urls,
-		"https://www.idcap.org.br/",
-		"https://www.fundacaofafipa.org.br/",
-		"https://www.fundacaofafipa.org.br/",
-	)
+	file, error := os.Open(filepath.Join("assets", "sites.txt"))
+
+	if error != nil {
+		fmt.Println("Erro ao abrir o arquivo", error)
+		os.Exit(-1)
+	}
+
+	reader := bufio.NewReader(file)
+
+	for {
+		url, error := reader.ReadString('\n')
+
+		if error == io.EOF {
+			break
+		}
+
+		url = strings.TrimSpace(url)
+
+		urls = append(urls, url)
+	}
+
+	file.Close()
 
 	fmt.Println("--- Iniciando o monitoramento de", len(urls), "sites ---")
 
