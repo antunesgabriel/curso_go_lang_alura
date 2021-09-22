@@ -1,1 +1,2 @@
 22/09/2021 15:38:05 -- SITE: https://random-status-code.herokuapp.com
+FAILED ás 22/09/2021 15:39:11 -- SITE: https://random-status-code.herokuapp.com

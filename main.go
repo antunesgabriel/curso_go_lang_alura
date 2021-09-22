@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"time"
 	"strings"
+	"time"
 )
 
 const REPEAT_AMOUNT int = 5
@@ -28,6 +28,7 @@ func main() {
 			monitoring()
 		case 2:
 			fmt.Println("Exibindo logs...")
+			readLogs()
 		case 0:
 			fmt.Println("Obrigado", name, "por usar o Monitor em Go Lang - v", version)
 			os.Exit(0)
@@ -120,5 +121,34 @@ func testSite(site string) {
 		fmt.Println("SUCCESS -- O site:", site, "está respondendo como o esperado - STATUS CODE", statusCode)
 	} else {
 		fmt.Println("FAILED -- O site:", site, "não respondeu como o esperado - STATUS CODE", statusCode)
+		registerLog(site)
+	}
+}
+
+func registerLog(site string) {
+	file, err := os.OpenFile(filepath.Join("assets", "logs.txt"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0755)
+
+	if err != nil {
+		file.Close()
+		fmt.Println("Erro", err)
+		return
+	}
+	timestamps := time.Now().Format("02/01/2006 15:04:05")
+	message := "FAILED ás " + timestamps + " -- SITE: " + site + "\n"
+
+	if _, err := file.WriteString(message); err != nil {
+		file.Close()
+		fmt.Println(err)
+		return
+	}
+
+	file.Close()
+}
+
+func readLogs() {
+	if file, err := os.ReadFile(filepath.Join("assets", "logs.txt")); err != nil {
+		fmt.Println("Não foi possivel ver os logs")
+	} else {
+		fmt.Println(string(file))
 	}
 }
